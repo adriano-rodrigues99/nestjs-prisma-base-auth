@@ -1,0 +1,11 @@
+version: "3"
+services:
+  marcenaria-postgresql:
+    container_name: marcenaria-postgresql
+    build: ./
+    shm_size: 1gb
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - 5432:5432
