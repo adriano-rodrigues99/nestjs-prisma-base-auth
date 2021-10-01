@@ -29,33 +29,49 @@
 ## Installation
 
 ```bash
-$ npm install
+$ yarn install
+```
+
+## Create database with docker
+
+```bash
+# go to containers folder
+$ cd containers
+
+# start docker container
+$ docker-compose up -d
 ```
 
 ## Running the app
 
 ```bash
+# run prisma migration
+$ yarn prisma migrate dev
+
+# generate prisma structure
+$ yarn prisma generate
+
 # development
-$ npm run start
+$ yarn start
 
 # watch mode
-$ npm run start:dev
+$ yarn start:dev
 
 # production mode
-$ npm run start:prod
+$ yarn start:prod
 ```
 
 ## Test
 
 ```bash
 # unit tests
-$ npm run test
+$ yarn test
 
 # e2e tests
-$ npm run test:e2e
+$ yarn test:e2e
 
 # test coverage
-$ npm run test:cov
+$ yarn test:cov
 ```
 
 ## Support
