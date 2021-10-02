@@ -39,12 +39,12 @@ export class UserService {
     });
   }
 
-  public async findOne(id: number): Promise<UserDTO> {
+  public async findOne(id: number, selectPassword = false): Promise<User> {
     return await this.prismaService.user.findFirst({
       where: {
         id,
       },
-      select: getUserSelectFields(),
+      select: getUserSelectFields(selectPassword),
     });
   }
 
@@ -71,8 +71,12 @@ export class UserService {
       throw new BadRequestException('User not found');
     }
 
+    const password = updateUserDto.password
+      ? await this.encryptPassword(updateUserDto.password)
+      : user.password;
+
     return await this.prismaService.user.update({
-      data: { ...user, ...updateUserDto },
+      data: { ...user, ...updateUserDto, password },
       where: {
         id,
       },

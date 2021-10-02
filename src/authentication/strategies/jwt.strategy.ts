@@ -25,9 +25,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(payload: AccessTokenPayload): Promise<{
-    user: UserDTO;
-  }> {
+  async validate(payload: AccessTokenPayload): Promise<UserDTO> {
     const { sub: id } = payload;
 
     const user = await this.userService.findOne(+id);
@@ -36,6 +34,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       return null;
     }
 
-    return { user };
+    return user;
   }
 }
