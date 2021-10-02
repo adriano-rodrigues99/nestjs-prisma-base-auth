@@ -3,6 +3,7 @@ import { Prisma, User } from '@prisma/client';
 import { hash } from 'bcrypt';
 import { PrismaService } from '../prisma/prisma.service';
 import { UserDTO } from './dto/user.dto';
+import { MailService } from '../mail/mail.service';
 
 const getUserSelectFields = (password = false) => ({
   id: true,
@@ -13,7 +14,10 @@ const getUserSelectFields = (password = false) => ({
 
 @Injectable()
 export class UserService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly mailService: MailService,
+  ) {}
 
   public async encryptPassword(password: any): Promise<string> {
     return await hash(password, 8);
@@ -24,13 +28,19 @@ export class UserService {
     if (existUser) {
       throw new BadRequestException('User already exists with this email');
     }
-
-    return await this.prismaService.user.create({
+    const savedUser: User = await this.prismaService.user.create({
       data: {
         ...createUserDto,
         password: await this.encryptPassword(createUserDto.password),
       },
+      select: getUserSelectFields(),
     });
+
+    this.mailService.sendCreation({
+      ...savedUser,
+      password: createUserDto.password,
+    });
+    return savedUser;
   }
 
   public async findAll(): Promise<UserDTO[]> {

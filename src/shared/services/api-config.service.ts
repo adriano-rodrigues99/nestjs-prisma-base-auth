@@ -1,5 +1,8 @@
+import { MailerOptions } from '@nestjs-modules/mailer';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { join } from 'path';
+import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 
 @Injectable()
 export class ApiConfigService {
@@ -83,6 +86,26 @@ export class ApiConfigService {
   get appConfig(): { port: number } {
     return {
       port: this.getNumber('PORT', 3000),
+    };
+  }
+
+  get mailerConfig(): MailerOptions {
+    console.log(join(__dirname, '..', '..', '..', 'mail', 'templates'));
+
+    const MAIL_USER = this.getString('MAIL_USER');
+    const MAIL_PASSWORD = this.getString('MAIL_PASSWORD');
+    const MAIL_HOST = this.getString('MAIL_HOST');
+    return {
+      transport: `smtps://${MAIL_USER}:${MAIL_PASSWORD}@${MAIL_HOST}`,
+      defaults: {
+        from: `Equipe X <${this.getString('MAIL_FROM')}>`,
+      },
+      template: {
+        adapter: new HandlebarsAdapter(),
+        options: {
+          strict: true,
+        },
+      },
     };
   }
 }
